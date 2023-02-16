@@ -2,23 +2,29 @@
 pragma solidity ^0.8.17;
 
 contract MerkleProof {
+    // verify whether the given leaf is in the merkle tree
     function verify(
+        // input the proof from the leaf to the root, bottom up
         bytes32[] memory proof,
         bytes32 root,
         bytes32 leaf,
+        // index of the leaf in the tree
         uint256 index
     ) public pure returns (bool) {
+        // hash the leaf
         bytes32 hash = leaf;
-
+        // iterate through the proof
         for (uint256 i = 0; i < proof.length; i++) {
             bytes32 proofElement = proof[i];
-
+            // if the index is even, hash is the left leaf
             if (index % 2 == 0) {
                 hash = keccak256(abi.encodePacked(hash, proofElement));
+                // if the index is odd, hash is the right leaf
             } else {
                 hash = keccak256(abi.encodePacked(proofElement, hash));
             }
 
+            // divide the index by 2 and round down cause index is a uint
             index = index / 2;
         }
 
